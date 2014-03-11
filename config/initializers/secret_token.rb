@@ -9,4 +9,19 @@
 
 # Make sure your secret_key_base is kept private
 # if you're sharing your code publicly.
-DeviseLoginApp::Application.config.secret_key_base = '3f27928cc11ea2ca0bfe1ece2e588f939c20abbf027f9aad8d41f6c384adcfc2be5d468d591a8f6b5f62d4f1da6cca8abb81c1be744466ba1636d2d3ce9cf481'
+require 'securerandom'
+
+def secure_token
+  token_file = Rails.root.join('.secret')
+  if File.exist?(token_file)
+    # Use the existing token.
+    File.read(token_file).chomp
+  else
+    # Generate a new token and store it in token_file.
+    token = SecureRandom.hex(64)
+    File.write(token_file, token)
+    token
+  end
+end
+
+DeviseLoginApp::Application.config.secret_key_base = secure_token
